@@ -67,8 +67,8 @@ class PatientProfileCard extends StatelessWidget {
                       ),
                       Expanded(
                         child: DetailRow(
-                          title: 'Age',
-                          data: this.age,
+                          title: 'DOB',
+                          data: age,
                         ),
                       ),
                     ],

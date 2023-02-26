@@ -225,9 +225,9 @@ class _RegistrationState extends State<Registration> {
                             const SizedBox(
                               width: 15.0,
                             ),
-                            Container(
+                            const SizedBox(
                               width: double.infinity,
-                              child: const TextButton(
+                              child: TextButton(
                                 onPressed: null,
                                 // textColor: Colors.black87,
                                 child: Text(
@@ -756,9 +756,10 @@ class _RegistrationState extends State<Registration> {
     return null;
   }
 
-  Future<void> createNewUser(userType, email, password, name, gender, dob, height, weight) async {
+  Future<void> createNewUser(userType, email, password, name, gender, dob, height, weight, uid) async {
     final CollectionReference userCollection = FirebaseFirestore.instance.collection('Users');
-    return await userCollection.doc(userType).set({
+    return await userCollection.doc(uid).set({
+      "userType": userType,
       "email": email,
       "password": password,
       "name": name,
@@ -782,7 +783,7 @@ class _RegistrationState extends State<Registration> {
       await _auth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) => {
-                createNewUser(userType, email, password, name, gender, dob, height, weight),
+                createNewUser(userType, email, password, name, gender, dob, height, weight, value.user!.uid),
               })
           .catchError((e) {
         Fluttertoast.showToast(msg: e!.message);

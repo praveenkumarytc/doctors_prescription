@@ -1,6 +1,10 @@
+import 'package:doctor_prescription/models/doctor.dart';
+import 'package:doctor_prescription/pages/doctor/add_patient/scan_result.dart';
 import 'package:doctor_prescription/pages/doctor/components/app_bar.dart';
 import 'package:doctor_prescription/pages/doctor/components/drawer.dart';
+import 'package:doctor_prescription/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class ScanQRPage extends StatefulWidget {
   @override
@@ -8,34 +12,38 @@ class ScanQRPage extends StatefulWidget {
 }
 
 class _ScanQRPageState extends State<ScanQRPage> {
-  String qrText = "";
+  Barcode? qrText;
   GlobalKey qrKey = GlobalKey();
-  // QRViewController controller;
+  QRViewController? controller;
 
   @override
   void dispose() {
-    // controller?.dispose();
+    controller?.dispose();
     super.dispose();
   }
 
   void closeQr() {
-    // controller?.dispose();
+    controller?.dispose();
   }
 
-  // void _onQRViewCreate(QRViewController controller) async {
-  //   this.controller = controller;
-  //   final String newPatientID = await controller.scannedDataStream.first;
-  //   print("PATIENT ID: " + newPatientID);
-  //   scanSuccess(newPatientID);
-  // }
+  void _onQRViewCreated(QRViewController controller) {
+    this.controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+      setState(() {
+        qrText = scanData;
+      });
+      scanSuccess(qrText!.code);
+    });
+  }
 
-  void scanSuccess(scanData) {
+  void scanSuccess(String? scanData) {
     dispose();
-    // this.controller.dispose();
-    // Navigator.of(context).pushReplacementNamed(
-    //   DOCTOR_SCAN_RESULT,
-    //   arguments: QRScanResult(qrResult: scanData),
-    // );
+    controller!.dispose();
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ScanResultPageQR(qrText: scanData!),
+        ));
   }
 
   @override
@@ -50,14 +58,14 @@ class _ScanQRPageState extends State<ScanQRPage> {
           Center(
             child: Column(
               children: <Widget>[
-                // Expanded(
-                //   flex: 5,
-                //   child: QRView(
-                //     key: qrKey,
-                //     overlay: QrScannerOverlayShape(borderRadius: 10, borderColor: Colors.blueAccent, borderLength: 30, borderWidth: 10, cutOutSize: 300),
-                //     onQRViewCreated: _onQRViewCreate,
-                //   ),
-                // ),
+                Expanded(
+                  flex: 5,
+                  child: QRView(
+                    key: qrKey,
+                    overlay: QrScannerOverlayShape(borderRadius: 10, borderColor: Colors.blueAccent, borderLength: 30, borderWidth: 10, cutOutSize: 300),
+                    onQRViewCreated: _onQRViewCreated,
+                  ),
+                ),
               ],
             ),
           ),

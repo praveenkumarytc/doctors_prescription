@@ -7,19 +7,31 @@ import 'package:doctor_prescription/pages/doctor/dashboard.dart';
 import 'package:doctor_prescription/pages/patient/dashboard_patient.dart';
 import 'package:doctor_prescription/pages/patient/scan_prescription.dart';
 import 'package:doctor_prescription/pages/patient/showQR.dart';
+import 'package:doctor_prescription/provider/provider_services.dart';
 import 'package:doctor_prescription/routes.dart';
+import 'package:doctor_prescription/sharePrefs.dart';
 import 'package:doctor_prescription/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 List<CameraDescription>? cameras;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  SharedPreference.preferences = await SharedPreferences.getInstance();
   cameras = await availableCameras();
   await Hive.initFlutter();
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<FirebaseServices>(create: (context) => FirebaseServices(sharedPreferences: SharedPreference.preferences)),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -47,7 +59,7 @@ class MyApp extends StatelessWidget {
         // DOCTOR ROUTES
         DOCTOR_DASHBOARD: (context) => DoctorDashboard(),
         DOCTOR_SCAN_QR: (context) => ScanQRPage(),
-        DOCTOR_SCAN_RESULT: (context) => ScanResultPage(),
+        // DOCTOR_SCAN_RESULT: (context) => ScanResultPageQR(),
       },
     );
   }

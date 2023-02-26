@@ -1,4 +1,6 @@
+import 'package:doctor_prescription/provider/provider_services.dart';
 import 'package:doctor_prescription/routes.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,13 +17,13 @@ class DoctorAppDrawer extends StatelessWidget {
               width: double.infinity,
               child: Column(
                 children: [
-                  SizedBox(height: 50.0),
+                  const SizedBox(height: 50.0),
                   Image.asset(
                     'assets/icons/note.png',
                     width: 120.0,
                   ),
-                  SizedBox(height: 10.0),
-                  Text(
+                  const SizedBox(height: 10.0),
+                  const Text(
                     'Doctor\'s Prescription',
                     style: TextStyle(
                       fontSize: 24.0,
@@ -29,7 +31,7 @@ class DoctorAppDrawer extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(height: 20.0)
+                  const SizedBox(height: 20.0)
                 ],
               ),
             ),
@@ -37,7 +39,7 @@ class DoctorAppDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).pushReplacementNamed(DOCTOR_DASHBOARD);
               },
-              title: Text(
+              title: const Text(
                 "Dashboard",
                 style: TextStyle(
                   fontSize: 15,
@@ -48,9 +50,10 @@ class DoctorAppDrawer extends StatelessWidget {
             ),
             ListTile(
               onTap: () {
+                Navigator.pop(context);
                 Navigator.of(context).pushNamed(DOCTOR_SCAN_QR);
               },
-              title: Text(
+              title: const Text(
                 "Add Patient",
                 style: TextStyle(
                   fontSize: 15,
@@ -61,11 +64,10 @@ class DoctorAppDrawer extends StatelessWidget {
             ),
             ListTile(
               onTap: () async {
-                // await Provider.of<AuthBloc>(context, listen: false)
-                //     .firebaseSignOut();
+                await Provider.of<FirebaseServices>(context, listen: false).clearSharedData();
                 Navigator.of(context).pushReplacementNamed(LOGIN);
               },
-              title: Text(
+              title: const Text(
                 "Logout",
                 style: TextStyle(
                   fontSize: 15,

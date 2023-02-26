@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctor_prescription/components/doctorPatientCard.dart';
 import 'package:doctor_prescription/constants.dart';
+import 'package:doctor_prescription/provider/provider_services.dart';
 import 'package:doctor_prescription/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -29,22 +33,31 @@ class _LoginPageState extends State<LoginPage> {
 
   final FocusNode _userEmailFocus = FocusNode();
   final FocusNode _userPasswordFocus = FocusNode();
+  //set uid and user type in sharedprefs
+  void setPrefDeta(uid, userType) {
+    final firebaseServices = Provider.of<FirebaseServices>(context, listen: false);
+    // if (firebaseServices.sharedPreferences != null) {
+    firebaseServices.setUID(uid);
+    firebaseServices.setUserType(userType);
+    // }
+  }
 
   // login function
-  void signIn(String email, String password) async {
+  void signIn(BuildContext context, String email, String password) async {
     if (_formKey.currentState!.validate()) {
       try {
-        await _auth.signInWithEmailAndPassword(email: email, password: password).then((uid) => {
-              Fluttertoast.showToast(msg: "Login Successful"),
-              if (status == USER_TYPE_PATIENT)
-                {
-                  Navigator.of(context).pushReplacementNamed(PATIENT_DASHBOARD)
-                }
-              else
-                {
-                  Navigator.of(context).pushReplacementNamed(DOCTOR_DASHBOARD)
-                }
-            });
+        await _auth.signInWithEmailAndPassword(email: email, password: password).then((userCredential) async {
+          final CollectionReference userCollection = FirebaseFirestore.instance.collection('Users');
+          final userDoc = await userCollection.doc(userCredential.user!.uid).get();
+          final userType = userDoc.get("userType");
+          setPrefDeta(userCredential.user!.uid, userType);
+          Fluttertoast.showToast(msg: "Login Successful as $userType");
+          if (userType == USER_TYPE_PATIENT) {
+            Navigator.of(context).pushReplacementNamed(PATIENT_DASHBOARD);
+          } else {
+            Navigator.of(context).pushReplacementNamed(DOCTOR_DASHBOARD);
+          }
+        });
       } on FirebaseAuthException catch (error) {
         switch (error.code) {
           case "invalid-email":
@@ -255,7 +268,7 @@ class _LoginPageState extends State<LoginPage> {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () async {
-                                signIn(email!, password!);
+                                signIn(context, email!, password!);
                               },
                               child: const Text(
                                 'LOGIN',

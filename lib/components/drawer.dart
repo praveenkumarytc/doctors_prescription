@@ -1,5 +1,7 @@
+import 'package:doctor_prescription/provider/provider_services.dart';
 import 'package:doctor_prescription/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PatientDrawer extends StatelessWidget {
   const PatientDrawer({super.key});
@@ -76,9 +78,7 @@ class PatientDrawer extends StatelessWidget {
             ),
             ListTile(
               onTap: () async {
-                Navigator.pop(context);
-                // await Provider.of<AuthBloc>(context, listen: false)
-                //     .firebaseSignOut();
+                await Provider.of<FirebaseServices>(context, listen: false).clearSharedData();
                 Navigator.of(context).pushReplacementNamed(LOGIN);
               },
               title: const Text(
