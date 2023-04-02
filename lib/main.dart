@@ -2,7 +2,6 @@ import 'package:camera/camera.dart';
 import 'package:doctor_prescription/pages/auth/login.dart';
 import 'package:doctor_prescription/pages/auth/registration.dart';
 import 'package:doctor_prescription/pages/doctor/add_patient/scan_qr.dart';
-import 'package:doctor_prescription/pages/doctor/add_patient/scan_result.dart';
 import 'package:doctor_prescription/pages/doctor/dashboard.dart';
 import 'package:doctor_prescription/pages/patient/dashboard_patient.dart';
 import 'package:doctor_prescription/pages/patient/scan_prescription.dart';
